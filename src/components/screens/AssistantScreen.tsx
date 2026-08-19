@@ -5,66 +5,32 @@ import { useI18n } from '@/lib/i18n';
 import { useTextToSpeech } from '@/lib/hooks/useTextToSpeech';
 import type { ChatMessage } from '@/lib/types';
 
-const sampleResponses: Record<string, { response: string; actions: { type: 'do_today' | 'avoid' | 'check'; title: string; description: string }[] }> = {
-  default: {
-    response: 'मैं आपका कृषि मित्र हूँ। मैं मौसम, फसल, मंडी भाव, रोग, मिट्टी, और सरकारी योजनाओं के बारे में मदद कर सकता हूँ। बताइए, आज क्या जानना चाहते हैं?\n\nI am your Krishi Mitra. I can help with weather, crops, market prices, diseases, soil, and government schemes. What would you like to know today?',
-    actions: [],
-  },
-  rain: {
-    response: '🌧️ **कल बारिश की संभावना है।**\n\nIMD अनुसार, आपके क्षेत्र में कल 15mm बारिश हो सकती है। नमी 82% तक बढ़ सकती है।\n\n**Tomorrow light-moderate rain is expected.** IMD forecasts ~15mm rainfall with humidity rising to 82%.\n\n📊 Source: IMD Agromet Advisory',
-    actions: [
-      { type: 'avoid', title: 'Do NOT spray today', description: 'Rain will wash away pesticide. Waste of money.' },
-      { type: 'do_today', title: 'Clear drainage channels', description: 'Remove blockages before rain arrives.' },
-      { type: 'avoid', title: 'Skip irrigation', description: 'Rain will provide natural watering.' },
-    ],
-  },
-  price: {
-    response: '💰 **आज के टमाटर भाव:**\n\n• आज़ादपुर मंडी (दिल्ली): ₹2,000/क्विंटल ↑12.5%\n• मदनपल्ले (AP): ₹1,300/क्विंटल ↓8.2%\n\n**Tomato prices today:**\n- Azadpur Mandi (Delhi): ₹2,000/quintal ↑12.5%\n- Madanapalle (AP): ₹1,300/quintal ↓8.2%\n\nPrices are trending upward in North India. Consider selling if transport cost is reasonable.\n\n📊 Source: AGMARKNET, e-NAM',
-    actions: [
-      { type: 'do_today', title: 'Consider selling to Azadpur', description: 'Prices are 12.5% higher than last week.' },
-      { type: 'check', title: 'Check transport cost', description: 'Distance affects net profit. Calculate before deciding.' },
-    ],
-  },
-  disease: {
-    response: '🔍 **कपास में सफेद धब्बे** कई कारणों से हो सकते हैं:\n\n1. **पाउडरी मिल्ड्यू** — सबसे संभावित (70%)\n   - लक्षण: पत्तों पर सफेद पाउडर\n   - उपचार: कैराथेन 1ml/L पानी में छिड़काव\n\n2. **मीली बग** — कम संभावना (20%)\n   - लक्षण: सफेद रूई जैसा जमाव\n   - उपचार: प्रोफेनोफॉस 2ml/L\n\n⚠️ यह AI सुझाव है। गंभीर मामले में कृषि विशेषज्ञ से मिलें।\n\n📊 Source: ICAR, State Agri University',
-    actions: [
-      { type: 'do_today', title: 'Inspect affected area closely', description: 'Take close-up photos and check spread pattern.' },
-      { type: 'check', title: 'Monitor for 2-3 days', description: 'If spreading, spray recommended fungicide.' },
-    ],
-  },
-  fertilizer: {
-    response: '🧪 **गेहूँ के लिए उर्वरक (1 एकड़):**\n\n• **बुवाई के समय:**\n  - DAP: 50 kg\n  - MOP: 20 kg\n  - ज़िंक सल्फेट: 10 kg\n\n• **पहली सिंचाई (21 दिन):**\n  - यूरिया: 35 kg\n\n• **दूसरी सिंचाई (45 दिन):**\n  - यूरिया: 30 kg\n\n**Wheat fertilizer per acre:**\nBasal: 50kg DAP + 20kg MOP + 10kg Zinc Sulphate\n1st irrigation: 35kg Urea\n2nd irrigation: 30kg Urea\n\n⚠️ Adjust based on soil test report.\n\n📊 Source: PAU Ludhiana, ICAR',
-    actions: [
-      { type: 'do_today', title: 'Get soil tested first', description: 'Apply fertilizer based on soil health card values.' },
-    ],
-  },
+const WELCOME_MESSAGES: Record<string, string> = {
+  hi: 'नमस्ते! 🙏 मैं आपका **कृषि मित्र** हूँ। मैं आपकी हर सवाल का जवाब दे सकता हूँ — मौसम, फसल, मंडी भाव, रोग, खाद, सरकारी योजनाएं, या कुछ भी! बताइए, आज क्या जानना चाहते हैं? 🌾',
+  en: 'Namaste! 🙏 I am your **Krishi Mitra** — your AI farming assistant. I can answer any question — weather, crops, market prices, diseases, fertilizers, government schemes, or anything else! What would you like to know today? 🌾',
+  pa: 'ਸਤ ਸ੍ਰੀ ਅਕਾਲ! 🙏 ਮੈਂ ਤੁਹਾਡਾ **ਕ੍ਰਿਸ਼ੀ ਮਿੱਤਰ** ਹਾਂ। ਮੈਂ ਤੁਹਾਡੇ ਕਿਸੇ ਵੀ ਸਵਾਲ ਦਾ ਜਵਾਬ ਦੇ ਸਕਦਾ ਹਾਂ! ਅੱਜ ਕੀ ਜਾਣਨਾ ਚਾਹੁੰਦੇ ਹੋ? 🌾',
+  te: 'నమస్కారం! 🙏 నేను మీ **కృషి మిత్ర** ని. ఏదైనా అడగండి — వాతావరణం, పంటలు, మార్కెట్ ధరలు, వ్యాధులు, ఎరువులు, ప్రభుత్వ పథకాలు! ఈ రోజు ఏమి తెలుసుకోవాలనుకుంటున్నారు? 🌾',
 };
-
-function getAIResponse(message: string) {
-  const lower = message.toLowerCase();
-  if (lower.includes('rain') || lower.includes('बारिश') || lower.includes('barish') || lower.includes('mausam') || lower.includes('weather')) return sampleResponses.rain;
-  if (lower.includes('price') || lower.includes('bhav') || lower.includes('भाव') || lower.includes('mandi') || lower.includes('मंडी') || lower.includes('sell') || lower.includes('बेच')) return sampleResponses.price;
-  if (lower.includes('disease') || lower.includes('रोग') || lower.includes('spot') || lower.includes('धब्ब') || lower.includes('kira') || lower.includes('pest') || lower.includes('कीड़')) return sampleResponses.disease;
-  if (lower.includes('fertilizer') || lower.includes('urea') || lower.includes('उर्वरक') || lower.includes('खाद') || lower.includes('dap')) return sampleResponses.fertilizer;
-  return sampleResponses.default;
-}
 
 export default function AssistantScreen() {
   const { t, language } = useI18n();
   const tts = useTextToSpeech(language);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      id: '0', role: 'assistant', content: sampleResponses.default.response,
+      id: '0', role: 'assistant', content: WELCOME_MESSAGES[language] || WELCOME_MESSAGES.en,
       timestamp: new Date(), language, type: 'text', sources: ['Krishi Mitra AI'],
     },
   ]);
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const [isVoiceInput, setIsVoiceInput] = useState(false);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const [autoSpeak, setAutoSpeak] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -79,7 +45,6 @@ export default function AssistantScreen() {
   // Track when TTS stops
   useEffect(() => {
     if (!tts.isSpeaking && speakingMsgId) {
-      // Small delay to avoid flicker
       const timer = setTimeout(() => {
         if (!tts.isSpeaking) {
           setSpeakingMsgId(null);
@@ -128,51 +93,149 @@ export default function AssistantScreen() {
     }
   };
 
-  const sendMessage = useCallback((text: string) => {
-    if (!text.trim()) return;
+  const sendMessage = useCallback(async (text: string) => {
+    if (!text.trim() || isStreaming) return;
 
     // Stop any current speech before new message
     tts.stop();
     setSpeakingMsgId(null);
+    setApiError(null);
 
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
       role: 'user', content: text.trim(),
       timestamp: new Date(), language, type: 'text',
     };
+
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsThinking(true);
 
-    setTimeout(() => {
-      const aiResult = getAIResponse(text);
-      const aiMsgId = (Date.now() + 1).toString();
+    const aiMsgId = (Date.now() + 1).toString();
+
+    try {
+      // Build conversation history for the API
+      const chatHistory = [...messages, userMsg]
+        .filter(m => m.role === 'user' || m.role === 'assistant')
+        .map(m => ({ role: m.role, content: m.content }));
+
+      // Cancel any previous request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: chatHistory, language }),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to get response');
+      }
+
+      // Start streaming
+      setIsThinking(false);
+      setIsStreaming(true);
+
+      // Add empty AI message that we'll stream into
       const aiMsg: ChatMessage = {
         id: aiMsgId,
-        role: 'assistant', content: aiResult.response,
+        role: 'assistant', content: '',
         timestamp: new Date(), language, type: 'text',
-        sources: ['ICAR', 'IMD', 'AGMARKNET'],
-        confidence: 82,
-        actions: aiResult.actions.map(a => ({ ...a, icon: a.type === 'do_today' ? '✅' : a.type === 'avoid' ? '🚫' : '🔍', priority: 'medium' as const })),
+        sources: ['Gemini AI', 'Krishi Mitra'],
       };
       setMessages(prev => [...prev, aiMsg]);
-      setIsThinking(false);
 
-      // Auto-speak the AI response
-      if (autoSpeak) {
-        // Small delay to let the message render first
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullResponse = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') break;
+
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.error) {
+                  throw new Error(parsed.error);
+                }
+                if (parsed.text) {
+                  fullResponse += parsed.text;
+                  // Update the message content in real-time
+                  setMessages(prev =>
+                    prev.map(m =>
+                      m.id === aiMsgId ? { ...m, content: fullResponse } : m
+                    )
+                  );
+                }
+              } catch (parseError) {
+                // Skip non-JSON lines
+                if (parseError instanceof SyntaxError) continue;
+                throw parseError;
+              }
+            }
+          }
+        }
+      }
+
+      setIsStreaming(false);
+
+      // Auto-speak the AI response after streaming is complete
+      if (autoSpeak && fullResponse) {
         setTimeout(() => {
-          speakMessage(aiMsgId, aiResult.response);
+          speakMessage(aiMsgId, fullResponse);
         }, 400);
       }
-    }, 1500 + Math.random() * 1000);
-  }, [language, tts, autoSpeak, speakMessage]);
+    } catch (error) {
+      setIsThinking(false);
+      setIsStreaming(false);
+
+      if (error instanceof Error && error.name === 'AbortError') return;
+
+      const errorMessage = error instanceof Error ? error.message : 'Something went wrong';
+      setApiError(errorMessage);
+
+      // Show error as AI message
+      const errorAiMsg: ChatMessage = {
+        id: aiMsgId,
+        role: 'assistant',
+        content: language === 'hi'
+          ? `⚠️ माफ़ करें, कुछ गड़बड़ हुई। कृपया दोबारा कोशिश करें।\n\n**Error:** ${errorMessage}`
+          : `⚠️ Sorry, something went wrong. Please try again.\n\n**Error:** ${errorMessage}`,
+        timestamp: new Date(), language, type: 'text',
+      };
+      setMessages(prev => {
+        // Replace if we already added an empty msg, otherwise add new
+        const hasEmptyMsg = prev.some(m => m.id === aiMsgId);
+        if (hasEmptyMsg) {
+          return prev.map(m => m.id === aiMsgId ? errorAiMsg : m);
+        }
+        return [...prev, errorAiMsg];
+      });
+    }
+  }, [language, tts, autoSpeak, speakMessage, messages, isStreaming]);
 
   const quickQuestions = [
     language === 'hi' ? 'क्या कल बारिश होगी?' : 'Will it rain tomorrow?',
     language === 'hi' ? 'आज टमाटर का भाव?' : "Today's tomato price?",
     language === 'hi' ? 'कपास में सफेद धब्बे' : 'White spots on cotton',
     language === 'hi' ? 'गेहूँ में कितना खाद?' : 'Wheat fertilizer dose?',
+    language === 'hi' ? 'PM-KISAN योजना क्या है?' : 'What is PM-KISAN scheme?',
+    language === 'hi' ? 'जैविक खेती कैसे करें?' : 'How to do organic farming?',
   ];
 
   return (
@@ -180,6 +243,9 @@ export default function AssistantScreen() {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-surface-800 flex items-center gap-2">
           <span>🤖</span> {t.chatTitle}
+          {isStreaming && (
+            <span className="text-xs font-normal text-primary-500 animate-pulse ml-1">● AI typing...</span>
+          )}
         </h2>
 
         {/* Auto-speak toggle + Speed control */}
@@ -218,6 +284,14 @@ export default function AssistantScreen() {
           </button>
         </div>
       </div>
+
+      {/* API Error Banner */}
+      {apiError && apiError.includes('API key') && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-sm text-amber-800">
+          <strong>⚙️ Setup Required:</strong> Add your Gemini API key to <code className="bg-amber-100 px-1 rounded">.env.local</code> file.
+          Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="underline font-semibold">aistudio.google.com/apikey</a>
+        </div>
+      )}
 
       {/* Quick Questions */}
       {messages.length <= 1 && (
@@ -265,8 +339,12 @@ export default function AssistantScreen() {
                 </div>
               )}
 
+              {/* Streaming cursor effect */}
               <div className={`text-sm whitespace-pre-wrap leading-relaxed ${msg.role === 'user' ? 'text-white' : 'text-surface-700'}`}>
                 {msg.content}
+                {isStreaming && msg.id === messages[messages.length - 1]?.id && msg.role === 'assistant' && (
+                  <span className="inline-block w-2 h-4 bg-primary-500 animate-pulse ml-0.5 rounded-sm" />
+                )}
               </div>
 
               {/* Action Cards */}
@@ -289,7 +367,7 @@ export default function AssistantScreen() {
               )}
 
               {/* Voice Controls + Sources for AI messages */}
-              {msg.role === 'assistant' && (
+              {msg.role === 'assistant' && !isStreaming && msg.content && (
                 <div className="mt-3 pt-2 border-t border-surface-100">
                   {/* Voice playback controls */}
                   <div className="flex items-center gap-1.5 mb-2">
@@ -420,11 +498,12 @@ export default function AssistantScreen() {
           onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
           placeholder={t.chatPlaceholder}
           className="flex-1 px-3 py-3 text-base bg-transparent outline-none"
+          disabled={isStreaming}
         />
 
         <button
           onClick={() => sendMessage(input)}
-          disabled={!input.trim() || isThinking}
+          disabled={!input.trim() || isThinking || isStreaming}
           className="bg-primary-500 text-white w-12 h-12 rounded-xl flex items-center justify-center text-xl disabled:opacity-50 hover:bg-primary-600 transition-colors active:scale-95 flex-shrink-0"
         >
           ➤
