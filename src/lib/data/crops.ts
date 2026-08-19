@@ -1,0 +1,125 @@
+// Krishi Mitra — Crop & Disease Data
+import type { CropInfo, DiseaseInfo } from '@/lib/types';
+
+export const crops: CropInfo[] = [
+  {
+    id: 'wheat', name: 'Wheat', nameHi: 'गेहूँ', namePa: 'ਕਣਕ', nameTe: 'గోధుమ',
+    category: 'cereal', season: ['rabi'], sowingMonths: [10, 11], harvestMonths: [3, 4],
+    waterReq: 'medium', daysToHarvest: [120, 150], idealSoilPh: [6.0, 7.5], idealTemp: [15, 25],
+    costPerAcre: 18000, expectedYield: [18, 25], msp: 2275, image: '🌾',
+    stages: [
+      { name: 'Land Preparation', dayRange: [0, 7], activities: ['Plowing', 'Leveling', 'Soil treatment'], icon: '🚜' },
+      { name: 'Sowing', dayRange: [8, 14], activities: ['Seed treatment', 'Line sowing', 'Basal fertilizer'], icon: '🌱' },
+      { name: 'Germination', dayRange: [15, 25], activities: ['First irrigation', 'Check germination', 'Gap filling'], icon: '🌿' },
+      { name: 'Tillering', dayRange: [26, 50], activities: ['Second irrigation', 'Urea top-dressing', 'Weed control'], icon: '🌿' },
+      { name: 'Heading', dayRange: [51, 80], activities: ['Third irrigation', 'Pest monitoring', 'Foliar spray'], icon: '🌾' },
+      { name: 'Grain Filling', dayRange: [81, 110], activities: ['Fourth irrigation', 'Aphid monitoring', 'No excess nitrogen'], icon: '🌾' },
+      { name: 'Maturity & Harvest', dayRange: [111, 140], activities: ['Stop irrigation', 'Harvest at golden color', 'Threshing'], icon: '🌾' },
+      { name: 'Post-Harvest', dayRange: [141, 150], activities: ['Drying', 'Storage', 'Selling decision'], icon: '📦' },
+    ],
+  },
+  {
+    id: 'rice', name: 'Rice', nameHi: 'चावल', namePa: 'ਚੌਲ', nameTe: 'వరి',
+    category: 'cereal', season: ['kharif'], sowingMonths: [6, 7], harvestMonths: [10, 11],
+    waterReq: 'high', daysToHarvest: [120, 150], idealSoilPh: [5.5, 7.0], idealTemp: [22, 32],
+    costPerAcre: 22000, expectedYield: [20, 30], msp: 2183, image: '🍚',
+    stages: [
+      { name: 'Nursery Preparation', dayRange: [0, 25], activities: ['Seed selection', 'Nursery bed', 'Seeding'], icon: '🌱' },
+      { name: 'Transplanting', dayRange: [25, 35], activities: ['Puddling', 'Transplanting 2-3 seedlings', 'Maintain water level'], icon: '🌿' },
+      { name: 'Vegetative Growth', dayRange: [35, 65], activities: ['Weed control', 'Fertilizer', 'Water management'], icon: '🌿' },
+      { name: 'Flowering', dayRange: [65, 90], activities: ['Maintain water', 'Pest check', 'No urea'], icon: '🌸' },
+      { name: 'Grain Filling', dayRange: [90, 115], activities: ['Reduce water', 'Bird protection', 'Monitor'], icon: '🌾' },
+      { name: 'Harvest', dayRange: [115, 140], activities: ['Drain field', 'Harvest at 20-22% moisture', 'Dry in sun'], icon: '🌾' },
+    ],
+  },
+  {
+    id: 'cotton', name: 'Cotton', nameHi: 'कपास', namePa: 'ਕਪਾਹ', nameTe: 'పత్తి',
+    category: 'fibre', season: ['kharif'], sowingMonths: [5, 6], harvestMonths: [10, 11, 12],
+    waterReq: 'medium', daysToHarvest: [150, 180], idealSoilPh: [6.0, 8.0], idealTemp: [21, 35],
+    costPerAcre: 25000, expectedYield: [8, 15], msp: 6620, image: '🏵️',
+    stages: [
+      { name: 'Land Prep & Sowing', dayRange: [0, 15], activities: ['Deep plowing', 'Seed treatment', 'Sow at 90cm spacing'], icon: '🚜' },
+      { name: 'Vegetative', dayRange: [15, 60], activities: ['Thinning', 'Weeding', 'First irrigation'], icon: '🌿' },
+      { name: 'Squaring', dayRange: [60, 90], activities: ['Pest scouting', 'Bollworm check', 'Fertilizer top dress'], icon: '🌸' },
+      { name: 'Flowering & Boll', dayRange: [90, 130], activities: ['Regular irrigation', 'Pink bollworm traps', 'Picking early bolls'], icon: '🏵️' },
+      { name: 'Maturity & Picking', dayRange: [130, 170], activities: ['Multiple pickings', 'Grade separation', 'Sun drying'], icon: '📦' },
+    ],
+  },
+  {
+    id: 'tomato', name: 'Tomato', nameHi: 'टमाटर', namePa: 'ਟਮਾਟਰ', nameTe: 'టమాటా',
+    category: 'vegetable', season: ['kharif', 'rabi', 'zaid'], sowingMonths: [1,2,6,7,9,10], harvestMonths: [3,4,5,9,10,11,12],
+    waterReq: 'medium', daysToHarvest: [60, 90], idealSoilPh: [6.0, 7.0], idealTemp: [20, 30],
+    costPerAcre: 35000, expectedYield: [80, 150], msp: undefined, image: '🍅',
+    stages: [
+      { name: 'Nursery', dayRange: [0, 25], activities: ['Seed sowing in trays', 'Shade management', 'Hardening'], icon: '🌱' },
+      { name: 'Transplanting', dayRange: [25, 30], activities: ['Field prep', 'Transplant at 60cm', 'Light irrigation'], icon: '🌿' },
+      { name: 'Vegetative', dayRange: [30, 50], activities: ['Staking', 'Weeding', 'Fertilizer'], icon: '🌿' },
+      { name: 'Flowering & Fruiting', dayRange: [50, 70], activities: ['Pest monitoring', 'Micronutrient spray', 'Regular water'], icon: '🌸' },
+      { name: 'Harvesting', dayRange: [70, 90], activities: ['Pick at breaker stage', 'Handle carefully', 'Quick market delivery'], icon: '🍅' },
+    ],
+  },
+  {
+    id: 'mustard', name: 'Mustard', nameHi: 'सरसों', namePa: 'ਸਰ੍ਹੋਂ', nameTe: 'ఆవాలు',
+    category: 'oilseed', season: ['rabi'], sowingMonths: [10, 11], harvestMonths: [2, 3],
+    waterReq: 'low', daysToHarvest: [110, 140], idealSoilPh: [6.0, 7.5], idealTemp: [15, 25],
+    costPerAcre: 12000, expectedYield: [6, 10], msp: 5650, image: '🌻',
+    stages: [
+      { name: 'Sowing', dayRange: [0, 10], activities: ['Seed treatment', 'Line sowing 30cm', 'Light irrigation'], icon: '🌱' },
+      { name: 'Vegetative', dayRange: [10, 50], activities: ['Thinning', 'Weeding', 'First irrigation at 30 days'], icon: '🌿' },
+      { name: 'Flowering', dayRange: [50, 80], activities: ['Second irrigation', 'Aphid monitoring', 'No excess nitrogen'], icon: '🌼' },
+      { name: 'Pod Formation', dayRange: [80, 110], activities: ['Third irrigation', 'Bird protection', 'Monitor maturity'], icon: '🌿' },
+      { name: 'Harvest', dayRange: [110, 130], activities: ['Harvest when pods turn brown', 'Sun dry 3-4 days', 'Threshing'], icon: '🌾' },
+    ],
+  },
+];
+
+export const diseases: DiseaseInfo[] = [
+  {
+    id: 'wheat-rust', name: 'Wheat Rust (Yellow/Brown)', nameHi: 'गेहूँ का गेरुआ रोग', crop: 'wheat',
+    symptoms: ['Orange-brown pustules on leaves', 'Yellow stripes on leaves', 'Reduced grain size', 'Premature drying'],
+    causes: ['Puccinia striiformis (Yellow)', 'Puccinia triticina (Brown)', 'High humidity + moderate temp', 'Susceptible varieties'],
+    treatment: ['Spray Propiconazole 25% EC (1ml/L water)', 'Spray Tebuconazole 25.9% EC (1ml/L)', 'Repeat after 15 days if needed', 'Remove severely infected plants'],
+    prevention: ['Use resistant varieties (HD-3086, DBW-187)', 'Timely sowing', 'Avoid excess nitrogen', 'Monitor from January onwards'],
+    severity: 'high',
+  },
+  {
+    id: 'rice-blast', name: 'Rice Blast', nameHi: 'चावल का ब्लास्ट रोग', crop: 'rice',
+    symptoms: ['Diamond-shaped spots on leaves', 'Gray center with brown border', 'Neck rot at panicle', 'White empty grains'],
+    causes: ['Magnaporthe oryzae fungus', 'High humidity > 85%', 'Excess nitrogen', 'Dense planting'],
+    treatment: ['Spray Tricyclazole 75% WP (0.6g/L)', 'Spray Isoprothiolane 40% EC (1.5ml/L)', 'Drain excess water', 'Reduce nitrogen application'],
+    prevention: ['Use resistant varieties', 'Balanced fertilizer', 'Proper spacing', 'Seed treatment with Carbendazim'],
+    severity: 'high',
+  },
+  {
+    id: 'cotton-bollworm', name: 'Cotton Bollworm', nameHi: 'कपास की बॉलवर्म', crop: 'cotton',
+    symptoms: ['Holes in bolls', 'Larvae inside bolls', 'Premature boll dropping', 'Damaged squares and flowers'],
+    causes: ['Helicoverpa armigera', 'Pink bollworm (Pectinophora)', 'Warm weather', 'Continuous cotton cultivation'],
+    treatment: ['Install pheromone traps (5/acre)', 'Spray Emamectin Benzoate 5% SG (0.4g/L)', 'Hand-pick and destroy damaged bolls', 'Release Trichogramma wasps'],
+    prevention: ['Bt cotton varieties', 'Timely sowing', 'Crop rotation', 'Destroy crop residue after harvest'],
+    severity: 'high',
+  },
+  {
+    id: 'tomato-blight', name: 'Tomato Late Blight', nameHi: 'टमाटर का झुलसा रोग', crop: 'tomato',
+    symptoms: ['Water-soaked lesions on leaves', 'White mold on leaf underside', 'Brown lesions on fruit', 'Rapid plant death in wet weather'],
+    causes: ['Phytophthora infestans', 'Cool + wet conditions', 'Poor air circulation', 'Overhead irrigation'],
+    treatment: ['Spray Mancozeb 75% WP (2.5g/L)', 'Spray Metalaxyl + Mancozeb (2.5g/L)', 'Remove infected plants immediately', 'Improve drainage'],
+    prevention: ['Use resistant varieties', 'Staking for air flow', 'Drip irrigation (not overhead)', 'Mulching', 'Avoid excess moisture'],
+    severity: 'critical',
+  },
+  {
+    id: 'tomato-leafcurl', name: 'Tomato Leaf Curl Virus', nameHi: 'टमाटर की पत्ती मोड़ रोग', crop: 'tomato',
+    symptoms: ['Upward curling of leaves', 'Yellowing of leaf margins', 'Stunted growth', 'Small, deformed fruits'],
+    causes: ['Tomato leaf curl virus (ToLCV)', 'Whitefly (Bemisia tabaci) vector', 'High temperature', 'Infected seedlings'],
+    treatment: ['Remove infected plants immediately', 'Control whitefly: Imidacloprid 17.8% SL (0.3ml/L)', 'Install yellow sticky traps', 'No cure for virus — manage vector'],
+    prevention: ['Use ToLCV-resistant varieties', 'Healthy nursery practices', 'Neem oil spray on nursery', 'Barrier crops around field'],
+    severity: 'high',
+  },
+  {
+    id: 'mustard-aphid', name: 'Mustard Aphid', nameHi: 'सरसों का माहू', crop: 'mustard',
+    symptoms: ['Tiny green insects clustering on shoots/flowers', 'Honeydew secretion on leaves', 'Sooty mold growth', 'Stunted pods and low oil content'],
+    causes: ['Lipaphis erysimi', 'Cool weather 10-20°C', 'Late sowing', 'Excess nitrogen'],
+    treatment: ['Spray Dimethoate 30% EC (1ml/L)', 'Spray neem oil 5ml/L as first option', 'Remove heavily infested shoots', 'Spray in evening to protect bees'],
+    prevention: ['Timely sowing (Oct 15-Nov 5)', 'Avoid excess nitrogen', 'Yellow pan traps for monitoring', 'Intercropping with wheat'],
+    severity: 'medium',
+  },
+];
